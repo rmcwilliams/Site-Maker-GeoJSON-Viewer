@@ -22,44 +22,45 @@ $(document).ready(function () {
 	});
 
 	function onEachFeature(feature, layer) {
-		if (feature.geometry.type == "Point") {
-			console.log(feature);
-			//bind click
-			layer.on('mouseover', function (e) {
-				// e = event
-				if (e.target.feature.properties.real_site) {
-					$('#theInfo').html("Real site: True<br>Site No.: " + e.target.feature.properties.site_no);
-				} else {
-					$('#theInfo').html("Real site: False<br>Assigned ID: " + e.target.feature.properties.assigned_id + "<br>ID: " + e.target.feature.properties.id);
-				}
-				console.log(e.target.feature.properties);
-				// You can make your ajax call declaration here
-				//$.ajax(... 
+		//console.log(feature);
+		if (feature.properties.ReachCode) {
+			layer.bindPopup("<b>ReachCode</b>: " + feature.properties.ReachCode, {
+				maxWidth : 150,
+				maxHeight : 70
+			});
+		} else if (feature.properties.real_site) {
+			layer.bindPopup("<b>Real site</b>: True<br><b>Site No.</b>: " + feature.properties.site_no, {
+				maxWidth : 150,
+				maxHeight : 70
+			});
+		} else {
+			layer.bindPopup("<b>Real site</b>: False<br><b>Assigned ID</b>: " + feature.properties.assigned_id + "<br><b>ID</b>: " + feature.properties.id, {
+				maxWidth : 150,
+				maxHeight : 70
 			});
 		}
 	}
 
 	var theCircleIcon = new L.icon({
 		iconUrl: 'circle.PNG',
-		iconSize:     [7, 7], // size of the icon  
+		iconSize:     [10, 10], // size of the icon  
 	});
 
 	var theTriangleIcon = new L.icon({
 		iconUrl: 'triangle.PNG',
-		iconSize:     [10, 10], // size of the icon  
+		iconSize:     [13, 13], // size of the icon  
 	});
 
 	// load GeoJSON from an external file
 	$.getJSON("data.json",function(data){
 		// add GeoJSON layer to the map once the file is loaded
-		theJsonLayer = L.geoJson(data, {
+		var theJsonLayer = L.geoJson(data, {
 			pointToLayer: function (feature, latlng) {
-				console.log(feature);
+				//console.log(feature);
 				if (feature.properties.id) {
 					return L.marker(latlng, {icon: theCircleIcon});
-				} else {
-					return L.marker(latlng, {icon: theTriangleIcon});
 				}
+				return L.marker(latlng, {icon: theTriangleIcon});
 			},
 			onEachFeature: onEachFeature
 		}).addTo(map);
